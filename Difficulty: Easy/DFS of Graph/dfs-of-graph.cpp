@@ -4,26 +4,25 @@ using namespace std;
 
 
 // } Driver Code Ends
+
 class Solution {
   public:
-    void solve(vector<int>& ans,unordered_map<int,bool> &visited,vector<vector<int>>& adj,int num){
-        visited[num]=true;
-        ans.push_back(num);
-        for(int i=0;i<adj[num].size();i++){
-            if(!visited[adj[num][i]]){
-                solve(ans,visited,adj,adj[num][i]);
-            }
+    void dfs(vector<int>& ans,vector<vector<int>>& adj,int val,unordered_map<int,bool> &visited){
+        if(visited[val]) return ;
+        
+        ans.push_back(val);
+        visited[val]=true;
+        for(auto i:adj[val]){
+            dfs(ans,adj,i,visited);
         }
     }
-    // Function to return a list containing the DFS traversal of the graph.
-    vector<int> dfsOfGraph(vector<vector<int>>& adj) {
+    vector<int> dfs(vector<vector<int>>& adj) {
         // Code here
-       unordered_map<int,bool> visited;
-       vector<int> ans;
-       solve(ans,visited,adj,0);
-       return ans;
+        vector<int> ans;
+        unordered_map<int,bool> visited;
+        dfs(ans,adj,0,visited);
+        return ans;
     }
-    
 };
 
 
@@ -32,22 +31,28 @@ class Solution {
 int main() {
     int tc;
     cin >> tc;
+    cin.ignore();
     while (tc--) {
-        int V, E;
-        cin >> V >> E;
-
+        int V;
+        cin >> V;
+        cin.ignore();
         vector<vector<int>> adj(
             V); // Use vector of vectors instead of array of vectors.
 
-        for (int i = 0; i < E; i++) {
-            int u, v;
-            cin >> u >> v;
-            adj[u].push_back(v);
-            adj[v].push_back(u);
+        for (int i = 0; i < V; i++) {
+            string input;
+            getline(cin, input);
+            int num;
+            vector<int> node;
+            stringstream ss(input);
+            while (ss >> num) {
+                node.push_back(num);
+            }
+            adj[i] = node;
         }
 
         Solution obj;
-        vector<int> ans = obj.dfsOfGraph(adj);
+        vector<int> ans = obj.dfs(adj);
         for (int i = 0; i < ans.size(); i++) {
             cout << ans[i] << " ";
         }
