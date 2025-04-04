@@ -7,33 +7,41 @@ using namespace std;
 
 class Solution {
   public:
-    // Function to detect cycle in an undirected graph.
-    bool isCycle(vector<vector<int>>& adj) {
-        // Code here
-        unordered_map<int,bool> visited;
-        unordered_map<int,int> parent;
-        queue<int>q;
-        for(int i=0;i<adj.size();i++){
-        if(!visited[i]){
-             q.push(i);
-        visited[i]=true;
-        parent[i]=-1;
-        while(!q.empty()){
-            int fr=q.front();
-            q.pop();
-            for(auto j:adj[fr]){
-                if(visited[j] && j!=parent[fr]){
-                    return true;
-                }
-                if(!visited[j]){
-                    q.push(j);
-                    visited[j]=true;
-                    parent[j]=fr;
-                }
+    bool solve(int i,unordered_map<int,bool>& vis,unordered_map<int,int>& par,unordered_map<int,list<int>>& adj){
+        
+        for(auto j:adj[i]){
+            if(!vis[j]){
+                par[j]=i;
+                vis[j]=1;
+                bool ans=solve(j,vis,par,adj);
+                if(ans) return true;
             }
-            
+            else if(vis[j] && par[i] != j){
+                return true;
+            }
         }
+        return false;
+    }
+    bool isCycle(int V, vector<vector<int>>& edges) {
+        // Code here
+        unordered_map<int,list<int>> adj;
+        for(int i=0;i<edges.size();i++){
+            int fir=edges[i][0];
+            int sec=edges[i][1];
+            adj[fir].push_back(sec);
+            adj[sec].push_back(fir);
         }
+        bool ans=false;
+        unordered_map<int,bool> vis;
+        
+        unordered_map<int,int> par;
+        for(int i=0;i<V;i++){
+            if(!vis[i]){
+            vis[i]=1;
+            par[i]=-1;
+            ans=solve(i,vis,par,adj);
+            if(ans) return true;
+            }
         }
         return false;
     }
@@ -41,29 +49,33 @@ class Solution {
 
 
 //{ Driver Code Starts.
+
 int main() {
     int tc;
     cin >> tc;
+    cin.ignore();
     while (tc--) {
         int V, E;
         cin >> V >> E;
-        vector<vector<int>> adj(V);
-        for (int i = 0; i < E; i++) {
+        cin.ignore();
+        vector<vector<int>> edges;
+        for (int i = 1; i <= E; i++) {
             int u, v;
             cin >> u >> v;
-            adj[u].push_back(v);
-            adj[v].push_back(u);
+            edges.push_back({u, v});
         }
+
         Solution obj;
-        bool ans = obj.isCycle(adj);
+        bool ans = obj.isCycle(V, edges);
         if (ans)
-            cout << "1\n";
+            cout << "true\n";
         else
-            cout << "0\n";
+            cout << "false\n";
 
         cout << "~"
              << "\n";
     }
     return 0;
 }
+
 // } Driver Code Ends
